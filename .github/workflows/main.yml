@@ -1,0 +1,22 @@
+name: Send Discord Webhook
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  send-webhook:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Send Discord Webhook
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: |
+        curl -H "Content-Type: application/json" \
+             -d '{"embeds": [{"title": "Wynik z strony zmcpl.github.io", "description": "> Twój zarobek : **1234 zł**\n\n> Stawka Godzinowa : **28,10 zł**\n\n> Przepracowane godziny : **3123**", "color": 3066993}]}' \
+             $DISCORD_WEBHOOK_URL
