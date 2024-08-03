@@ -336,7 +336,7 @@ function obliczDni() {
         if (date.getDay() === 6 && includeSaturdays) {
             saturdays++;
         }
-        if (date.getDay() >= 1 && date.getDay() <= 5) { // dni robocze: poniedziałek do piątek
+        if (date.getDay() >= 1 && date.getDay() <= 5) { 
             businessDays++;
         }
     }
@@ -380,9 +380,9 @@ function sharescore() {
 
     const payload = {
         embeds: [{
-            title: "Wynik z strony zmcpl.github.io",
+            title: "Wynik z strony ziorbek.github.io",
             description: `> Twój zarobek : **${wynik}**\n\n> Stawka Godzinowa : **${stawkagodzinowa}**\n\n> Przepracowane godziny : **${przepracowanegodziny}**`,
-            color: 3066993 // zielony kolor
+            color: 3066993 
         }]
     };
 
