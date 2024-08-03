@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brutto / Netto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            min-width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+        }
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 80vh;
+            min-width: 100vh;
+            flex-direction: column;
+        }
+        #kalkulatorwynagrodzen,
+        #obliczanie-dni {
+            max-width: 1000px;
+            width: 100%;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #na_odpowiedź {
+            background-color: #333;
+            width: 100%;
+            height: 70px;
+            border-radius: 4px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        #obliczenia,
+        #dni-obliczenia {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+        }
+        .highlight {
+            color: #FFEB3B;
+        }
+        #pochwalsie {
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            transform: translateX(460px) translateY(20px);
+            opacity: 0.3;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            display: none;
+        }
+        #pochwalsie:hover {
+            opacity: 1;
+        }
+        #blackscreen {
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.253);
+            position: absolute;
+            left: 0;
+            top: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+            opacity: 0;
+        }
+        #share_score{
+            position: fixed;
+            width: 600px;
+            height: 250px;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            transform: translateY(-120px);
+            box-shadow: 0 0 1.5rem black;
+        }
+        a {
+            text-decoration: none;
+        }
+        #przyciski {
+            width: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+        #przyciski button {
+            width: 40;
+        }
+        #closecss {
+            width: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: red;
+            font-weight: bolder;
+            position: absolute;
+        }
+        #closecss:active {
+            background-color: rgb(102, 0, 0);
+        } 
+        footer {
+            color: rgba(255, 255, 255, 0.836);
+            background-color: #4CAF50;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+            font-size: 15px;
+            font-weight: bolder;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <b>Oblicz swoje zarobki u Ziorbasa</b>
+    </header>
+    <main>
+        <div id="kalkulatorwynagrodzen">
+            <h1>Kalkulator wynagrodzenia netto / brutto</h1>
+            Ilość godzin przepracowanych: <br>
+            <input type="number" id="hours" value="">
+            <br>
+            Stawka godzinowa: <br>
+            <input type="number" id="stawka" value="28.10" step="any" class="no-spinner">
+            <br><br>
+            VAT 23% :
+            <input type="checkbox" id="vatpay">
+            <br><br>
+            <button onclick="oblicznettobrutto()">OBLICZ</button>
+            <br>
+            <div id="na_odpowiedź">
+                <span id="obliczenia"></span>
+                <div id="pochwalsie" onclick="showyourscore()">
+                    <img src="discord-brands-solid.svg" alt="discord-show-your-score">
+                </div>
+            </div>
+        </div>
+
+        <!-- Obliczanie dni -->
+        <div id="obliczanie-dni">
+            <h1>Obliczanie dni roboczych</h1>
+            <label for="start-date">Data początkowa (dd.mm.rrrr):</label>
+            <input type="text" id="start-date" placeholder="01.08.2024">
+            <br>
+            <label for="end-date">Data końcowa (dd.mm.rrrr):</label>
+            <input type="text" id="end-date" placeholder="31.08.2024">
+            <br>
+            Uwzględnij soboty:
+            <input type="checkbox" id="include-saturdays">
+            <br><br>
+            <div id="saturday-multiplier-container" style="display: none;">
+                Dodaj stawkę za soboty (Kod działa z polem "Stawka godzinowa") :
+                <select id="saturday-multiplier">
+                    <option value="1">0% (brak dodatkowego wynagrodzenia)</option>
+                    <option value="1.5">50% więcej (50% większa stawka)</option>
+                    <option value="2">100% więcej (100% większa stawka)</option>
+                </select>
+                <br>
+            </div>
+            <button onclick="obliczDni()">OBLICZ DNI</button>
+            <br>
+            <div id="na_odpowiedź">
+                <span id="dni-obliczenia"></span>
+            </div>
+        </div>
+        <div id="blackscreen">
+            <div id="share_score">
+                <button onclick="closeshare()" id="closecss">X</button>
+                <h1>Pochwal się wynikiem na discordzie</h1>
+                <ul>
+                    <li>
+                        Twój zarobek : <b><span id="wynik"></span></b>
+                    </li><br>
+                    <li>
+                        Stawka Godzinowa : <b><span id="stawkagodzinowa"></span></b>
+                    </li><br>
+                    <li>
+                        Przepracowane godziny : <b><span id="przepracowanegodziny">32</span></b>
+                    </li><br>
+                </ul>
+                <span id="przyciski">
+                    <span>
+                        <button onclick="sharescore()">
+                            Wyślij wynik 
+                        </button>
+                    </span>
+                    <span>
+                        <a href="https://discord.gg/eHzkceKraP">
+                            <button>
+                                Dołącz na naszego discorda
+                            </button>
+                        </a>
+                    </span>
+                </span>
+            </div>    
+        </div>
+        
+    </main>
+    <footer>
+        Strona w przyszłości może zostać zaktualizowana | <br>| 03.08.2024 zmcpl.github.io | <br>| Proszę o niepodpierdalanie kodu źródłowego JS, HTML, CSS Dziękuje <3 |
+    </footer>
+    <script>
+        function formatCurrency(value) {
+    return value.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' });
+}
+
+function oblicznettobrutto() {
+    var godz = parseFloat(document.getElementById('hours').value);
+    var payout = parseFloat(document.getElementById('stawka').value);
+    var vat = document.getElementById('vatpay').checked;
+    const podatek = 23;
+    var shareobraz = document.getElementById('pochwalsie');
+
+    if (isNaN(godz) || isNaN(payout) || godz <= 0 || payout <= 0) {
+        document.getElementById('obliczenia').innerHTML = 'Proszę wprowadzić poprawne liczby.';
+        return;
+    }
+
+    let wynagrodzenie = godz * payout;
+    let vatText = '';
+
+    if (vat) {
+        wynagrodzenie = wynagrodzenie * (1 - (podatek / 100));
+        vatText = ' - VAT';
+        document.getElementById('obliczenia').innerHTML = `Twoje wynagrodzenie netto po odliczeniu składek wynosi <span class="highlight">${formatCurrency(wynagrodzenie)}</span>`;
+    } else {
+        document.getElementById('obliczenia').innerHTML = `Twoje wynagrodzenie brutto równe netto wynosi <span class="highlight">${formatCurrency(wynagrodzenie)}</span>`;
+    }
+
+    // Update share score data
+    document.getElementById('wynik').innerText = formatCurrency(wynagrodzenie) + vatText;
+    document.getElementById('stawkagodzinowa').innerText = formatCurrency(payout);
+    document.getElementById('przepracowanegodziny').innerText = godz;
+
+    // Show the share icon
+    document.getElementById('pochwalsie').style.display = 'block';
+}
+
+function parseDate(dateString) {
+    const [day, month, year] = dateString.split('.').map(Number);
+    return new Date(year, month - 1, day);
+}
+
+function obliczDni() {
+    var startDateStr = document.getElementById('start-date').value;
+    var endDateStr = document.getElementById('end-date').value;
+    var includeSaturdays = document.getElementById('include-saturdays').checked;
+    var saturdayMultiplier = parseFloat(document.getElementById('saturday-multiplier').value) || 1;
+    var hourlyRate = parseFloat(document.getElementById('stawka').value);
+
+    var startDate = parseDate(startDateStr);
+    var endDate = parseDate(endDateStr);
+
+    if (isNaN(startDate) || isNaN(endDate) || startDate >= endDate) {
+        document.getElementById('dni-obliczenia').innerHTML = 'Proszę wprowadzić poprawne daty.';
+        return;
+    }
+
+    let totalDays = 0;
+    let businessDays = 0;
+    let saturdays = 0;
+
+    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+        totalDays++;
+        if (date.getDay() === 6 && includeSaturdays) {
+            saturdays++;
+        }
+        if (date.getDay() >= 1 && date.getDay() <= 5) { // dni robocze: poniedziałek do piątek
+            businessDays++;
+        }
+    }
+
+    let result = `Łączna liczba dni roboczych: <span class="highlight">${businessDays}</span>`;
+    if (includeSaturdays) {
+        let saturdaysHours = saturdays * 8;
+        let saturdaysEarnings = saturdaysHours * hourlyRate * saturdayMultiplier;
+        result += `, z czego <span class="highlight">${saturdays}</span> sobót ~ (<span class="highlight">${saturdaysEarnings.toFixed(2)}</span> PLN dodatkowego wynagrodzenia brutto)`;
+    }
+
+    document.getElementById('dni-obliczenia').innerHTML = result;
+}
+
+document.getElementById('include-saturdays').addEventListener('change', function() {
+    document.getElementById('saturday-multiplier-container').style.display = this.checked ? 'block' : 'none';
+});
+
+function showyourscore() {
+    const blackscreen = document.getElementById('blackscreen');
+    blackscreen.style.display = 'flex';
+    setTimeout(() => {
+        blackscreen.style.opacity = '1';
+    }, 10);
+}
+
+function closeshare() {
+    const blackscreen = document.getElementById('blackscreen');
+    blackscreen.style.opacity = '0';
+    setTimeout(() => {
+        blackscreen.style.display = 'none';
+    }, 300);
+}
+
+function sharescore() {
+    const wynik = document.getElementById('wynik').innerText;
+    const stawkagodzinowa = document.getElementById('stawkagodzinowa').innerText;
+    const przepracowanegodziny = document.getElementById('przepracowanegodziny').innerText;
+
+    const webhookUrl = "https://discord.com/api/webhooks/1269295104976359466/h9jvUQIjc6jYwQzzBNHzdgZWK3jMXOm3QMm3PAiU2z0uXVvwfDdQ2R1EsdxcQMx39ZXx";
+
+    const payload = {
+        embeds: [{
+            title: "Wynik z strony zmcpl.github.io",
+            description: `> Twój zarobek : **${wynik}**\n\n> Stawka Godzinowa : **${stawkagodzinowa}**\n\n> Przepracowane godziny : **${przepracowanegodziny}**`,
+            color: 3066993 // zielony kolor
+        }]
+    };
+
+    fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    }).then(response => {
+        if (response.ok) {
+            alert('Wynik został wysłany!');
+        } else {
+            alert('Wystąpił błąd podczas wysyłania wyniku.');
+        }
+    }).catch(error => {
+        alert('Wystąpił błąd podczas wysyłania wyniku.');
+        console.error('Error:', error);
+    });
+}
+
+    </script>
+</body>
+</html>
